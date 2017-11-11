@@ -7,6 +7,7 @@ const ctx3 = wx.createCanvasContext('canvas3')
 var Cx = 155, Cy = 345, Vx = 0, Vy = 0, R = 45, x = 15, y = 15, r = 15, r1 = 25, Cx1 = 255, Cy1 = 65,ok=0,saveX=10,saveY=10
 var Cx2=155,Cy2=65,r2=25
 var BoomR=50
+var ball_res,res_ok=0
 Page({
   data: {
     motto: 'Hello World',
@@ -34,35 +35,57 @@ Page({
   rangeCalc:function(Px,Py,x1,y1,Rr){
     return Math.sqrt(((Px-x1)*(Px-x1)+(Py-y1)*(Py-y1))/(Rr*Rr))
   },
-  onLoad: function () {
-    var temp = 'http://593951.freep.cn/593951/2222.png'
-    wx.saveFile({
-      tempFilePath: temp[0],
+  downloadRes:function(){
+    wx.downloadFile({
+      url: 'https://593951.freep.cn/593951/2222.png', //仅为示例，并非真实的资源
       success: function (res) {
-        console.log(res.savedFilePath)
-        var savedFilePath = res.savedFilePath
+        // 只要服务器有响应数据，就会把响应内容写入文件并进入 success 回调，业务需要自行判断是否下载到了想要的内容
+        if (res.statusCode === 200) {
+          ball_res = res.tempFilePath
+          console.log(res.tempFilePath)
+          res_ok = 1
+        }
+      },
+      fail: function (er) {
+        console.log("fail", er)
       }
     })
-
-    ctx.drawImage('http://593951.freep.cn/593951/2222.png', x-r, y-r, 2*r, 2*r)
+  },
+  FirstDraw:function(){
+    ctx.drawImage(ball_res, x - r, y - r, 2 * r, 2 * r)
     ctx.draw()
-    ctx2.drawImage('http://593951.freep.cn/593951/2222.png', Cx-R, Cy-R, 2*R, 2*R)
-    ctx2.drawImage('http://593951.freep.cn/593951/2222.png', Cx1-r1, Cy1-r1, 2*r1, 2*r1)
-    ctx2.drawImage('http://593951.freep.cn/593951/2222.png', Cx2 - r2, Cy2 - r2, 2 * r2, 2 * r2)
+    ctx2.drawImage(ball_res, Cx - R, Cy - R, 2 * R, 2 * R)
+    ctx2.drawImage(ball_res, Cx1 - r1, Cy1 - r1, 2 * r1, 2 * r1)
+    ctx2.drawImage(ball_res, Cx2 - r2, Cy2 - r2, 2 * r2, 2 * r2)
     ctx2.draw()
-    this.update()
+  },
+  WaitAndRun:function(){
+    var that=this
+    if(res_ok==0){
+      setTimeout(function () {
+        // console.log("asd")
+        that.WaitAndRun();
+      }, 300);   
+    }else{
+      this.FirstDraw()
+      this.update()
+    }
+  },
+  onLoad: function () {
+    this.downloadRes()
+    this.WaitAndRun()
   },
   update:function(){
     this.ball_run(Vx/15,Vy/15)
     // console.log("add")
-    ctx.drawImage('http://593951.freep.cn/593951/2222.png', x - r, y - r, 2 * r, 2 * r)
+    ctx.drawImage(ball_res, x - r, y - r, 2 * r, 2 * r)
     ctx.draw()
     // console.log(x,y)
     var that = this
     setTimeout(function () {
      // console.log("asd")
       that.update();
-    }, 10);
+    }, 1000/30);
   },
   ball_run:function(vx,vy){
     // console.log(vx,vy)
@@ -79,7 +102,7 @@ Page({
   },
   ball_attack:function(xx,yy,kind){
     if(kind==1){
-      ctx3.drawImage('http://593951.freep.cn/593951/2222.png', xx - BoomR, yy - BoomR, 2 * BoomR, 2 * BoomR)
+      ctx3.drawImage(ball_res, xx - BoomR, yy - BoomR, 2 * BoomR, 2 * BoomR)
       ctx3.draw()
       setTimeout(function () {
         // console.log("asd")

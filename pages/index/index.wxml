@@ -1,0 +1,9 @@
+<canvas canvas-id="canvas1" id="canvas1"  style="margin: 5px; border:1px solid #d3d3d3;height:500px">
+</canvas>
+<canvas canvas-id="canvas3" id="canvas3"  style="margin: 5px; border:1px solid #d3d3d3;height:500px">
+</canvas>
+<canvas canvas-id="canvas2" id="canvas2" style="margin: 5px; border:1px solid #d3d3d3;height:500px"  
+  bindtouchstart="start"
+  bindtouchmove="move"
+  bindtouchend="end">
+</canvas>
